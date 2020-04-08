@@ -106,17 +106,58 @@ this.postRequest("/doLogin", this.user).then(msg=>{
 
 #### 跨域请求转发
 ```
+vue-cli2配置
+
 请求转发在 vue 项目的 config/index.js 文件中配置如下
 
 proxyTable:{
 	"/":{
-		target: "需要请求的域",
+		target: "http://localhost:8088",
 		changeOrigin: true,
 		pathRewrite:{
 			"^/":""
 		}
-	}
+	},
+	'/ws/*': {
+        target: 'ws://127.0.0.1:8088',
+        ws: true
+      }
 }
+
+
+
+vue-lic3配置：
+
+let proxyObj = {};
+proxyObj['/ws'] = {
+    ws: true,
+    target: "ws://localhost:8081"
+};
+proxyObj['/'] = {
+    ws: false,
+    target: "http://localhost:8081",
+    changeOrigin: true,
+    pathRewrite: {
+        '^/': ''
+    }
+};
+module.exports = {
+    devServer: {
+        host: 'localhost',
+        port: 8080,
+        proxy: proxyObj
+    }
+}
+
+```
+
+#### 发布生产请求跨域问题
+```
+1. 方案一
+前端编译打包后放到spring-boot项目的resources/static/目录下，
+再由后台打包一并部署。
+
+2. nginx代理转发
 
 ```
 
